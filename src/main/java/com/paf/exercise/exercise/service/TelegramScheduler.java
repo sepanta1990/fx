@@ -60,12 +60,12 @@ public class TelegramScheduler {
 
             if (previousMessageAction == MessageAction.CLOSE) {
                 if (messageAction == MessageAction.OPEN) {
-                    onOpenPosition(update.getMessage().getText(), messageId);
+                    onClosePosition(update.getMessage().getText(), messageId);
 
                 }
             } else {
                 if (messageAction == MessageAction.OPEN) {
-                    onClosePosition(update.getMessage().getText(), messageId);
+                    onOpenPosition(update.getMessage().getText(), messageId);
                 }
             }
 
