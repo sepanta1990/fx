@@ -1,9 +1,6 @@
 package com.paf.exercise.exercise.service;
 
-import com.paf.exercise.exercise.dto.Position;
-import com.paf.exercise.exercise.dto.PositionWrapper;
-import com.paf.exercise.exercise.dto.SendMessageRequest;
-import com.paf.exercise.exercise.dto.Update;
+import com.paf.exercise.exercise.dto.*;
 import com.paf.exercise.exercise.util.MessageAction;
 import com.paf.exercise.exercise.util.Symbol;
 import com.paf.exercise.exercise.util.TradeType;
@@ -25,14 +22,14 @@ public class TelegramScheduler {
     @Value("${telegram.bot.chat.id}")
     private String telegramBotChatId;
 
-    private LinkedBlockingQueue<PositionWrapper> queue = new LinkedBlockingQueue<>();
+    private LinkedBlockingQueue<PositionRequest> queue = new LinkedBlockingQueue<>();
 
 
     private MessageAction previousMessageAction = null;
 
     private long offset = 978065120;
 
-    public void getLatestRequests(List<PositionWrapper> list) {
+    public void getLatestRequests(List<PositionRequest> list) {
         queue.drainTo(list);
     }
 
@@ -68,7 +65,7 @@ public class TelegramScheduler {
                 }
             } else {
                 if (messageAction == MessageAction.OPEN) {
-                    parseMessage(messageAction, update.getMessage().getText(), messageId);
+                    parseMessage(MessageAction.OPEN, update.getMessage().getText(), messageId);
                 }
             }
 
@@ -88,16 +85,11 @@ public class TelegramScheduler {
         if (messageAction == MessageAction.CLOSE) {
             System.out.println("closing: " + message);
 
-
-            Position position = new Position();
-            position.setLabel(message);
-
-            PositionWrapper positionWrapper = new PositionWrapper(position, messageId, MessageAction.CLOSE);
-            queue.add(positionWrapper);
+            ClosePositionRequest closePositionRequest = new ClosePositionRequest(messageId, message);
+            queue.add(closePositionRequest);
         } else if (messageAction == MessageAction.OPEN) {
             System.out.println("opening: " + message);
             String[] str = message.split("\\s+");
-
 
             Double tp = null;
             if (str.length >= 8 && !str[9].equalsIgnoreCase("OPEN")) {
@@ -105,9 +97,9 @@ public class TelegramScheduler {
             }
 
             Position position = new Position(Symbol.valueOf(str[0]), TradeType.valueOf(str[1]), 0.01, message, Double.parseDouble(str[3]), tp, Double.parseDouble(str[6]), true);
-            PositionWrapper positionWrapper = new PositionWrapper(position, messageId, MessageAction.OPEN);
+            OpenPositionRequest openPositionRequest = new OpenPositionRequest(position, messageId);
 
-            queue.add(positionWrapper);
+            queue.add(openPositionRequest);
         }
     }
 

@@ -1,6 +1,6 @@
 package com.paf.exercise.exercise;
 
-import com.paf.exercise.exercise.dto.PositionWrapper;
+import com.paf.exercise.exercise.dto.PositionRequest;
 import com.paf.exercise.exercise.service.TelegramScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +16,8 @@ public class PositionController {
     private TelegramScheduler telegramScheduler;
 
     @GetMapping
-    public List<PositionWrapper> getLatestPositions() {
-        List<PositionWrapper> list = new ArrayList<>();
+    public List<PositionRequest> getLatestPositions() {
+        List<PositionRequest> list = new ArrayList<>();
         telegramScheduler.getLatestRequests(list);
 
         return list;
