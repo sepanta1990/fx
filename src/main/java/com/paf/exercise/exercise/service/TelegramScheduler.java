@@ -60,12 +60,12 @@ public class TelegramScheduler {
 
             if (previousMessageAction == MessageAction.CLOSE) {
                 if (messageAction == MessageAction.OPEN) {
-                    parseMessage(MessageAction.CLOSE, update.getMessage().getText(), messageId);
+                    onOpenPosition(update.getMessage().getText(), messageId);
 
                 }
             } else {
                 if (messageAction == MessageAction.OPEN) {
-                    parseMessage(MessageAction.OPEN, update.getMessage().getText(), messageId);
+                    onClosePosition(update.getMessage().getText(), messageId);
                 }
             }
 
@@ -79,28 +79,33 @@ public class TelegramScheduler {
     }
 
 
-    private void parseMessage(MessageAction messageAction, String message, Long messageId) throws IllegalArgumentException {
+    private void onOpenPosition(String message, Long messageId) {
         message = message.trim().toUpperCase();
 
-        if (messageAction == MessageAction.CLOSE) {
-            System.out.println("closing: " + message);
+        System.out.println("opening: " + message);
+        String[] str = message.split("\\s+");
 
-            ClosePositionRequest closePositionRequest = new ClosePositionRequest(messageId, message);
-            queue.add(closePositionRequest);
-        } else if (messageAction == MessageAction.OPEN) {
-            System.out.println("opening: " + message);
-            String[] str = message.split("\\s+");
-
-            Double tp = null;
-            if (str.length >= 8 && !str[9].equalsIgnoreCase("OPEN")) {
-                tp = Double.parseDouble(str[9]);
-            }
-
-            Position position = new Position(Symbol.valueOf(str[0]), TradeType.valueOf(str[1]), 0.01, message, Double.parseDouble(str[3]), tp, Double.parseDouble(str[6]), true);
-            OpenPositionRequest openPositionRequest = new OpenPositionRequest(position, messageId);
-
-            queue.add(openPositionRequest);
+        Double tp = null;
+        if (str.length >= 8 && !str[9].equalsIgnoreCase("OPEN")) {
+            tp = Double.parseDouble(str[9]);
         }
+
+        Position position = new Position(Symbol.valueOf(str[0]), TradeType.valueOf(str[1]), 0.01, message, Double.parseDouble(str[3]), tp, Double.parseDouble(str[6]), true);
+        OpenPositionRequest openPositionRequest = new OpenPositionRequest(position, messageId);
+
+        queue.add(openPositionRequest);
+
+    }
+
+    private void onClosePosition(String message, Long messageId) {
+        message = message.trim().toUpperCase();
+
+        System.out.println("closing: " + message);
+
+        ClosePositionRequest closePositionRequest = new ClosePositionRequest(messageId, message);
+        queue.add(closePositionRequest);
+
+
     }
 
 
