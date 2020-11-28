@@ -1,30 +1,18 @@
-package com.paf.exercise.exercise.entity;
+package com.paf.exercise.exercise.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.paf.exercise.exercise.util.Symbol;
 import com.paf.exercise.exercise.util.TradeType;
 
-import javax.persistence.*;
-
-@Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Position {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    @Column
     private Symbol symbol;
-    @Column
     private TradeType tradeType;
-    @Column
     private Double quantity;
-    @Column
     private String label;
-    @Column
     private Double entryPrice;
-    @Column
     private Double takeProfit;
-    @Column
     private Double stopLoss;
-    @Column
     private Boolean running;
 
 
@@ -32,7 +20,6 @@ public class Position {
     }
 
     public Position(Symbol symbol, TradeType tradeType, Double quantity, String label, Double entryPrice, Double takeProfit, Double stopLoss, Boolean running) {
-        this.id = id;
         this.symbol = symbol;
         this.tradeType = tradeType;
         this.quantity = quantity;
@@ -43,13 +30,6 @@ public class Position {
         this.running = running;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public Symbol getSymbol() {
         return symbol;
@@ -113,5 +93,39 @@ public class Position {
 
     public void setRunning(boolean running) {
         this.running = running;
+    }
+
+    public void setEntryPrice(Double entryPrice) {
+        this.entryPrice = entryPrice;
+    }
+
+    public void setTakeProfit(Double takeProfit) {
+        this.takeProfit = takeProfit;
+    }
+
+    public void setStopLoss(Double stopLoss) {
+        this.stopLoss = stopLoss;
+    }
+
+    public Boolean getRunning() {
+        return running;
+    }
+
+    public void setRunning(Boolean running) {
+        this.running = running;
+    }
+
+    @Override
+    public String toString() {
+        return "Position{" +
+                "symbol=" + symbol +
+                ", tradeType=" + tradeType +
+                ", quantity=" + quantity +
+                ", label='" + label + '\'' +
+                ", entryPrice=" + entryPrice +
+                ", takeProfit=" + takeProfit +
+                ", stopLoss=" + stopLoss +
+                ", running=" + running +
+                '}';
     }
 }

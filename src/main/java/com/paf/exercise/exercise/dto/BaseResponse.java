@@ -1,24 +1,33 @@
 package com.paf.exercise.exercise.dto;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class BaseResponse<T> {
     private Boolean ok;
-    private List<T> result;
+    private T result;
 
-    public boolean isOk() {
+    public BaseResponse() {
+    }
+
+    public BaseResponse(Boolean ok, T result) {
+        this.ok = ok;
+        this.result = result;
+    }
+
+    public Boolean getOk() {
         return ok;
     }
 
-    public void setOk(boolean ok) {
+    public void setOk(Boolean ok) {
         this.ok = ok;
     }
 
-    public List<T> getResult() {
+    public T getResult() {
         return result;
     }
 
-    public void setResult(List<T> result) {
+    public void setResult(T result) {
         this.result = result;
     }
 

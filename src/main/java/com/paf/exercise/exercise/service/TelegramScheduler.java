@@ -1,93 +1,99 @@
 package com.paf.exercise.exercise.service;
 
-import com.paf.exercise.exercise.dto.BaseResponse;
+import com.paf.exercise.exercise.dto.Position;
+import com.paf.exercise.exercise.dto.PositionWrapper;
+import com.paf.exercise.exercise.dto.SendMessageRequest;
 import com.paf.exercise.exercise.dto.Update;
-import com.paf.exercise.exercise.entity.Position;
 import com.paf.exercise.exercise.util.MessageAction;
 import com.paf.exercise.exercise.util.Symbol;
 import com.paf.exercise.exercise.util.TradeType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
 public class TelegramScheduler {
 
-    private RestTemplate restTemplate;
+    @Autowired
+    private TelegramClient telegramClient;
 
-    @Value("${telegram.base.url}")
-    private String telegramBaseUrl;
+    @Value("${telegram.bot.chat.id}")
+    private String telegramBotChatId;
+
+    private LinkedBlockingQueue<PositionWrapper> queue = new LinkedBlockingQueue<>();
 
 
     private MessageAction previousMessageAction = null;
 
-
     private long offset = 978065120;
 
-    @PostConstruct
-    public void init() {
-        RestTemplateBuilder builder = new RestTemplateBuilder();
-        builder.setConnectTimeout(10000);
-        builder.setReadTimeout(30000);
-
-        restTemplate = builder.build();
+    public void getLatestRequests(List<PositionWrapper> list) {
+        queue.drainTo(list);
     }
+
 
     @Scheduled(initialDelay = 10000, fixedDelay = 20000)
     public void fetchTelegramMessages() {
 
-
-        List<Update> updateList = restTemplate.exchange(telegramBaseUrl + "/getUpdates?limit=1&offset=" + offset,
-                HttpMethod.GET, null,
-                new ParameterizedTypeReference<BaseResponse<Update>>() {
-                }).getBody().getResult();
-
+        List<Update> updateList = telegramClient.getUpdates(offset, 100);
         if (updateList.isEmpty()) {
             return;
         }
 
+        for (Update update : updateList) {
+            process(update);
+        }
 
+    }
+
+    private void process(Update update) {
+        Long messageId = null;
         try {
 
-
-            Update update = updateList.get(0);
             offset = update.getUpdateId() + 1;
+
+            messageId = update.getMessage().getMessageId();
 
             MessageAction messageAction = getMessageAction(update.getMessage().getText());
 
             if (previousMessageAction == MessageAction.CLOSE) {
                 if (messageAction == MessageAction.OPEN) {
-                    parseMessage(MessageAction.CLOSE, update.getMessage().getText());
+                    parseMessage(MessageAction.CLOSE, update.getMessage().getText(), messageId);
 
                 }
             } else {
                 if (messageAction == MessageAction.OPEN) {
-                    parseMessage(messageAction, update.getMessage().getText());
+                    parseMessage(messageAction, update.getMessage().getText(), messageId);
                 }
             }
 
             previousMessageAction = messageAction;
         } catch (Exception e) {
             e.printStackTrace();
+            if (messageId != null) {
+                telegramClient.sendMessage(new SendMessageRequest(telegramBotChatId, e.getMessage(), messageId));
+            }
         }
-
     }
 
 
-    private void parseMessage(MessageAction messageAction, String message) throws IllegalArgumentException {
+    private void parseMessage(MessageAction messageAction, String message, Long messageId) throws IllegalArgumentException {
         message = message.trim().toUpperCase();
 
         if (messageAction == MessageAction.CLOSE) {
             System.out.println("closing: " + message);
 
+
+            Position position = new Position();
+            position.setLabel(message);
+
+            PositionWrapper positionWrapper = new PositionWrapper(position, messageId, MessageAction.CLOSE);
+            queue.add(positionWrapper);
         } else if (messageAction == MessageAction.OPEN) {
             System.out.println("opening: " + message);
             String[] str = message.split("\\s+");
@@ -99,6 +105,9 @@ public class TelegramScheduler {
             }
 
             Position position = new Position(Symbol.valueOf(str[0]), TradeType.valueOf(str[1]), 0.01, message, Double.parseDouble(str[3]), tp, Double.parseDouble(str[6]), true);
+            PositionWrapper positionWrapper = new PositionWrapper(position, messageId, MessageAction.OPEN);
+
+            queue.add(positionWrapper);
         }
     }
 
