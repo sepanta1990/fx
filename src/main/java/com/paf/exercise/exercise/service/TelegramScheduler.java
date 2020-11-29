@@ -22,7 +22,7 @@ public class TelegramScheduler {
     @Value("${telegram.bot.chat.id}")
     private String telegramBotChatId;
 
-    private LinkedBlockingQueue<PositionRequest> queue = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<PositionRequest> queue = new LinkedBlockingQueue<>();
 
 
     private MessageAction previousMessageAction = null;
@@ -53,6 +53,9 @@ public class TelegramScheduler {
         try {
 
             offset = update.getUpdateId() + 1;
+            if (update.getMessage().getDate() * 1000 < System.currentTimeMillis() - 30 * 60 * 1000) {
+                return;
+            }
 
             messageId = update.getMessage().getMessageId();
 

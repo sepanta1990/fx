@@ -3,12 +3,15 @@ package com.paf.exercise.exercise.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Date;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Message {
     @JsonProperty("message_id")
     private Long messageId;
     @JsonProperty("text")
     private String text;
+    private Long date;
 
     public Long getMessageId() {
         return messageId;
@@ -26,11 +29,20 @@ public class Message {
         this.text = text;
     }
 
+    public Long getDate() {
+        return date;
+    }
+
+    public void setDate(Long date) {
+        this.date = date;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
                 "messageId=" + messageId +
                 ", text='" + text + '\'' +
+                ", date=" + date +
                 '}';
     }
 }
