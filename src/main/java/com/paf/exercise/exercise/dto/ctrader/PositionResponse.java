@@ -3,7 +3,7 @@ package com.paf.exercise.exercise.dto.ctrader;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class    PositionResponse {
+public class PositionResponse {
     private Long replyToMessageId;
     private String message;
     private boolean ok;
