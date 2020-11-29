@@ -1,6 +1,9 @@
 package com.paf.exercise.exercise.service;
 
-import com.paf.exercise.exercise.dto.ctrader.*;
+import com.paf.exercise.exercise.dto.ctrader.ClosePositionRequest;
+import com.paf.exercise.exercise.dto.ctrader.OpenPositionRequest;
+import com.paf.exercise.exercise.dto.ctrader.Position;
+import com.paf.exercise.exercise.dto.ctrader.PositionResponse;
 import com.paf.exercise.exercise.dto.telegram.SendMessageRequest;
 import com.paf.exercise.exercise.dto.telegram.Update;
 import com.paf.exercise.exercise.util.MessageAction;
@@ -17,7 +20,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Service
 public class TelegramService {
 
-    private final LinkedBlockingQueue<PositionRequest> queue = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<OpenPositionRequest> openPositionQueue = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<ClosePositionRequest> closePositionQueue = new LinkedBlockingQueue<>();
 
     @Value("${telegram.bot.chat.id}")
     private String telegramBotChatId;
@@ -31,8 +35,12 @@ public class TelegramService {
         telegramClient.sendMessage(new SendMessageRequest(telegramBotChatId, positionResponse.getMessage(), positionResponse.getReplyToMessageId()));
     }
 
-    public void getLatestRequests(List<PositionRequest> list) {
-        queue.drainTo(list);
+    public void getLatestOpenPositions(List<OpenPositionRequest> list) {
+        openPositionQueue.drainTo(list);
+    }
+
+    public void getLatestClosePositions(List<ClosePositionRequest> list) {
+        closePositionQueue.drainTo(list);
     }
 
 
@@ -83,7 +91,7 @@ public class TelegramService {
         Position position = new Position(Symbol.valueOf(str[0]), TradeType.valueOf(str[1]), 0.01, message, Double.parseDouble(str[3]), tp, Double.parseDouble(str[6]), true);
         OpenPositionRequest openPositionRequest = new OpenPositionRequest(position, messageId);
 
-        queue.add(openPositionRequest);
+        openPositionQueue.add(openPositionRequest);
 
     }
 
@@ -93,7 +101,7 @@ public class TelegramService {
         System.out.println("closing: " + message);
 
         ClosePositionRequest closePositionRequest = new ClosePositionRequest(messageId, message);
-        queue.add(closePositionRequest);
+        closePositionQueue.add(closePositionRequest);
 
 
     }

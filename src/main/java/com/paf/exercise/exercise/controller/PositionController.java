@@ -1,6 +1,7 @@
 package com.paf.exercise.exercise.controller;
 
-import com.paf.exercise.exercise.dto.ctrader.PositionRequest;
+import com.paf.exercise.exercise.dto.ctrader.ClosePositionRequest;
+import com.paf.exercise.exercise.dto.ctrader.OpenPositionRequest;
 import com.paf.exercise.exercise.dto.ctrader.PositionResponse;
 import com.paf.exercise.exercise.service.TelegramService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,18 @@ public class PositionController {
     @Autowired
     private TelegramService telegramService;
 
-    @GetMapping("/latest-positions")
-    public List<PositionRequest> getLatestPositions() {
-        List<PositionRequest> list = new ArrayList<>();
-        telegramService.getLatestRequests(list);
+    @GetMapping("/latest-open-positions")
+    public List<OpenPositionRequest> getLatestOpenPositions() {
+        List<OpenPositionRequest> list = new ArrayList<>();
+        telegramService.getLatestOpenPositions(list);
+
+        return list;
+    }
+
+    @GetMapping("/latest-close-positions")
+    public List<ClosePositionRequest> getLatestClosePositions() {
+        List<ClosePositionRequest> list = new ArrayList<>();
+        telegramService.getLatestClosePositions(list);
 
         return list;
     }

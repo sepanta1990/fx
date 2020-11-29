@@ -18,7 +18,7 @@ public class TelegramScheduler {
 
     private long offset = 978065120;
 
-    @Scheduled(initialDelay = 10000, fixedDelay = 20000)
+    @Scheduled(initialDelay = 10000, fixedDelay = 5000)
     public void fetchTelegramMessages() {
 
         List<Update> updateList = telegramClient.getUpdates(offset, 100);
