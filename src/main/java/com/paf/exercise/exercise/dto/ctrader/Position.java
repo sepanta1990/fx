@@ -30,15 +30,6 @@ public class Position {
         this.running = running;
     }
 
-
-    public Symbol getSymbol() {
-        return symbol;
-    }
-
-    public void setSymbol(Symbol symbol) {
-        this.symbol = symbol;
-    }
-
     public TradeType getTradeType() {
         return tradeType;
     }
@@ -63,44 +54,24 @@ public class Position {
         this.label = label;
     }
 
-    public double getEntryPrice() {
+    public Double getEntryPrice() {
         return entryPrice;
-    }
-
-    public void setEntryPrice(double entryPrice) {
-        this.entryPrice = entryPrice;
-    }
-
-    public double getTakeProfit() {
-        return takeProfit;
-    }
-
-    public void setTakeProfit(double takeProfit) {
-        this.takeProfit = takeProfit;
-    }
-
-    public double getStopLoss() {
-        return stopLoss;
-    }
-
-    public void setStopLoss(double stopLoss) {
-        this.stopLoss = stopLoss;
-    }
-
-    public boolean isRunning() {
-        return running;
-    }
-
-    public void setRunning(boolean running) {
-        this.running = running;
     }
 
     public void setEntryPrice(Double entryPrice) {
         this.entryPrice = entryPrice;
     }
 
+    public Double getTakeProfit() {
+        return takeProfit;
+    }
+
     public void setTakeProfit(Double takeProfit) {
         this.takeProfit = takeProfit;
+    }
+
+    public Double getStopLoss() {
+        return stopLoss;
     }
 
     public void setStopLoss(Double stopLoss) {
@@ -113,6 +84,14 @@ public class Position {
 
     public void setRunning(Boolean running) {
         this.running = running;
+    }
+
+    public Symbol getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(Symbol symbol) {
+        this.symbol = symbol;
     }
 
     @Override
