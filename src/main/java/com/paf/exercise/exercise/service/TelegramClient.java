@@ -1,9 +1,9 @@
 package com.paf.exercise.exercise.service;
 
-import com.paf.exercise.exercise.dto.BaseResponse;
-import com.paf.exercise.exercise.dto.Message;
-import com.paf.exercise.exercise.dto.SendMessageRequest;
-import com.paf.exercise.exercise.dto.Update;
+import com.paf.exercise.exercise.dto.telegram.BaseResponse;
+import com.paf.exercise.exercise.dto.telegram.Message;
+import com.paf.exercise.exercise.dto.telegram.SendMessageRequest;
+import com.paf.exercise.exercise.dto.telegram.Update;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;

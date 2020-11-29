@@ -1,4 +1,4 @@
-package com.paf.exercise.exercise.dto;
+package com.paf.exercise.exercise.dto.ctrader;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.paf.exercise.exercise.util.MessageAction;

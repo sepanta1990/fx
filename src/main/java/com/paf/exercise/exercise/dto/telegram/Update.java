@@ -1,4 +1,4 @@
-package com.paf.exercise.exercise.dto;
+package com.paf.exercise.exercise.dto.telegram;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
