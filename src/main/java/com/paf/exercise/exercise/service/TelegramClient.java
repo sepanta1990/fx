@@ -26,7 +26,7 @@ public class TelegramClient {
     @PostConstruct
     public void init() {
         RestTemplateBuilder builder = new RestTemplateBuilder();
-        builder.setConnectTimeout(10000);
+        builder.setConnectTimeout(20000);
         builder.setReadTimeout(30000);
 
         restTemplate = builder.build();
