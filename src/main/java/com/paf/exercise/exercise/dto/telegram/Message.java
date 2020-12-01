@@ -10,6 +10,8 @@ public class Message {
     @JsonProperty("text")
     private String text;
     private Long date;
+    @JsonProperty("forward_from_chat")
+    private Chat chat;
 
     public Long getMessageId() {
         return messageId;
@@ -35,12 +37,21 @@ public class Message {
         this.date = date;
     }
 
+    public Chat getChat() {
+        return chat;
+    }
+
+    public void setChat(Chat chat) {
+        this.chat = chat;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
                 "messageId=" + messageId +
                 ", text='" + text + '\'' +
                 ", date=" + date +
+                ", chat=" + chat +
                 '}';
     }
 }

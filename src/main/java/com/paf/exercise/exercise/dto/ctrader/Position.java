@@ -10,6 +10,7 @@ public class Position {
     private TradeType tradeType;
     private Double quantity;
     private String label;
+    private String comment;
     private Double entryPrice;
     private Double takeProfit;
     private Double stopLoss;
@@ -19,11 +20,12 @@ public class Position {
     public Position() {
     }
 
-    public Position(Symbol symbol, TradeType tradeType, Double quantity, String label, Double entryPrice, Double takeProfit, Double stopLoss, Boolean running) {
+    public Position(Symbol symbol, TradeType tradeType, Double quantity, String label, String comment, Double entryPrice, Double takeProfit, Double stopLoss, Boolean running) {
         this.symbol = symbol;
         this.tradeType = tradeType;
         this.quantity = quantity;
         this.label = label;
+        this.comment=comment;
         this.entryPrice = entryPrice;
         this.takeProfit = takeProfit;
         this.stopLoss = stopLoss;
@@ -52,6 +54,14 @@ public class Position {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public Double getEntryPrice() {

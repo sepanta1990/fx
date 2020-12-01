@@ -2,18 +2,15 @@ package com.paf.exercise.exercise.service;
 
 import com.paf.exercise.exercise.dto.ctrader.ClosePositionRequest;
 import com.paf.exercise.exercise.dto.ctrader.OpenPositionRequest;
-import com.paf.exercise.exercise.dto.ctrader.Position;
 import com.paf.exercise.exercise.dto.ctrader.PositionResponse;
+import com.paf.exercise.exercise.dto.telegram.Chat;
 import com.paf.exercise.exercise.dto.telegram.SendMessageRequest;
 import com.paf.exercise.exercise.dto.telegram.Update;
 import com.paf.exercise.exercise.util.MessageAction;
-import com.paf.exercise.exercise.util.Symbol;
-import com.paf.exercise.exercise.util.TradeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -54,19 +51,25 @@ public class TelegramService {
 
             messageId = update.getMessage().getMessageId();
 
-            MessageAction messageAction = getMessageAction(update.getMessage().getText());
+            Chat chat = update.getMessage().getChat();
+            if (chat == null) {
+                throw new Exception("Message is not forwarded from a channel");
+            }
+
+
+            MessageParser messageParser = getMessageParser(chat.getId());
+
+            MessageAction messageAction = messageParser.getMessageAction(update.getMessage().getText());
 
             if (previousMessageAction == MessageAction.CLOSE) {
                 if (messageAction == MessageAction.OPEN) {
-                    onClosePosition(update.getMessage().getText(), messageId);
-
+                    closePositionQueue.add(messageParser.onClosePosition(chat.getId(), update.getMessage().getText(), messageId));
                 }
             } else {
                 if (messageAction == MessageAction.OPEN) {
-                    onOpenPosition(update.getMessage().getText(), messageId);
+                    openPositionQueue.add(messageParser.onOpenPosition(chat.getId(), update.getMessage().getText(), messageId));
                 }
             }
-
             previousMessageAction = messageAction;
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,52 +79,13 @@ public class TelegramService {
         }
     }
 
-
-    private void onOpenPosition(String message, Long messageId) {
-        message = message.trim().toUpperCase();
-
-        System.out.println("opening: " + message);
-        String[] str = message.split("\\s+");
-
-        Double tp = null;
-        if (str.length >= 8 && !str[9].equalsIgnoreCase("OPEN")) {
-            tp = Double.parseDouble(str[9]);
+    private MessageParser getMessageParser(Long id) {
+        if (id == -1001305938901L) {
+            return new ForexLyticMessageParser();
+        } else if (id == -1001390026460L) {
+            return new MowriMessageParser();
         }
-
-        Position position = new Position(Symbol.valueOf(str[0]), TradeType.valueOf(str[1]), 0.01, message, Double.parseDouble(str[3]), tp, Double.parseDouble(str[6]), true);
-        OpenPositionRequest openPositionRequest = new OpenPositionRequest(position, messageId);
-
-        openPositionQueue.add(openPositionRequest);
-
+        throw new IllegalArgumentException("Channel is not supported with id: " + id);
     }
 
-    private void onClosePosition(String message, Long messageId) {
-        message = message.trim().toUpperCase();
-
-        System.out.println("closing: " + message);
-
-        ClosePositionRequest closePositionRequest = new ClosePositionRequest(messageId, message);
-        closePositionQueue.add(closePositionRequest);
-
-
-    }
-
-    private MessageAction getMessageAction(String message) throws IllegalArgumentException {
-        message = message.trim().toUpperCase();
-
-        if (message.startsWith("CLOSE")) {
-            return MessageAction.CLOSE;
-
-        } else if (isTradeMessage(message)) {
-            return MessageAction.OPEN;
-        } else {
-            throw new IllegalArgumentException(message + " has not a valid action");
-        }
-    }
-
-    private boolean isTradeMessage(String message) {
-        String symbolName = message.split(" ")[0].trim();
-
-        return Arrays.stream(Symbol.values()).anyMatch(symbol -> symbol.name().equalsIgnoreCase(symbolName));
-    }
 }
