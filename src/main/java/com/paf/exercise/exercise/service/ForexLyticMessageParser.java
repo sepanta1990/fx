@@ -36,7 +36,7 @@ public class ForexLyticMessageParser implements MessageParser {
     public OpenPositionRequest onOpenPosition(Long chatId, String message, Long messageId) {
         message = message.trim().toUpperCase();
 
-        System.out.println("opening: " + message);
+        System.out.println("opening: " + message + ", chatId: " + chatId);
         String[] str = message.split("\\s+");
 
         Double tp = null;
@@ -52,7 +52,7 @@ public class ForexLyticMessageParser implements MessageParser {
     public ClosePositionRequest onClosePosition(Long chatId, String message, Long messageId) {
         message = message.trim().toUpperCase();
 
-        System.out.println("closing: " + message);
+        System.out.println("closing: " + message + ", chatId: " + chatId);
 
         return new ClosePositionRequest(messageId, message + chatId);
     }
