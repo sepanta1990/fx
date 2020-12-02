@@ -74,7 +74,7 @@ public class TelegramService {
         } catch (Exception e) {
             e.printStackTrace();
             if (messageId != null) {
-                telegramClient.sendMessage(new SendMessageRequest(telegramBotChatId, e.getMessage(), messageId));
+                telegramClient.sendMessage(new SendMessageRequest(telegramBotChatId, "EXCEPTION: "+ e.getMessage(), messageId));
             }
         }
     }
