@@ -13,8 +13,6 @@ public class ForexLyticMessageParser implements MessageParser {
 
     @Override
     public MessageAction getMessageAction(String message) throws IllegalArgumentException {
-        message = message.trim().toUpperCase();
-
         if (message.startsWith("CLOSE")) {
             return MessageAction.CLOSE;
 
@@ -34,24 +32,30 @@ public class ForexLyticMessageParser implements MessageParser {
 
     @Override
     public OpenPositionRequest onOpenPosition(Long chatId, String message, Long messageId) {
-        message = message.trim().toUpperCase();
-
         System.out.println("opening: " + message + ", chatId: " + chatId);
-        String[] str = message.split("\\s+");
+
+        Double entry = extractFirstDecimal(message);
 
         Double tp = null;
-        if (str.length >= 8 && !str[9].equalsIgnoreCase("OPEN")) {
-            tp = Double.parseDouble(str[9]);
+        int index = message.indexOf("PROFIT");
+        if (index != -1) {
+            tp = extractFirstDecimal(message.substring(index));
         }
 
-        Position position = new Position(Symbol.valueOf(str[0]), TradeType.valueOf(str[1]), 0.01, message + chatId, chatId.toString(), Double.parseDouble(str[3]), tp, Double.parseDouble(str[6]), true);
+        Double sl = null;
+        index = message.indexOf("LOSS");
+        if (index != -1) {
+            sl = extractFirstDecimal(message.substring(index));
+        }
+
+        String[] str = message.split("\\s+");
+
+        Position position = new Position(Symbol.valueOf(str[0]), TradeType.valueOf(str[1]), 0.01, message + chatId, chatId.toString(), entry, tp, sl, true);
         return new OpenPositionRequest(position, messageId);
     }
 
     @Override
     public ClosePositionRequest onClosePosition(Long chatId, String message, Long messageId) {
-        message = message.trim().toUpperCase();
-
         System.out.println("closing: " + message + ", chatId: " + chatId);
 
         return new ClosePositionRequest(messageId, message + chatId);

@@ -24,4 +24,11 @@ public class OpenPositionRequest extends PositionRequest {
     public void setPosition(Position position) {
         this.position = position;
     }
+
+    @Override
+    public String toString() {
+        return "OpenPositionRequest{" +
+                "position=" + position +
+                '}';
+    }
 }

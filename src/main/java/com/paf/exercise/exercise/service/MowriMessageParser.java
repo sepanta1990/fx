@@ -13,8 +13,6 @@ public class MowriMessageParser implements MessageParser {
 
     @Override
     public MessageAction getMessageAction(String message) throws IllegalArgumentException {
-        message = message.trim().toUpperCase();
-
         if (message.startsWith("CLOSE")) {
             return MessageAction.CLOSE;
 
@@ -35,24 +33,30 @@ public class MowriMessageParser implements MessageParser {
 
     @Override
     public OpenPositionRequest onOpenPosition(Long chatId, String message, Long messageId) {
-        message = message.trim().toUpperCase();
-
         System.out.println("opening: " + message + ", chatId: " + chatId);
-        String[] str = message.split("\\s+|-");
+
+        Double entry = extractFirstDecimal(message);
 
         Double tp = null;
-        if (str.length >= 7) {
-            tp = Double.parseDouble(str[4]);
+        int index = message.indexOf("TP");
+        if (index != -1) {
+            tp = extractFirstDecimal(message.substring(index));
         }
 
-        Position position = new Position(Symbol.valueOf(str[0]), TradeType.valueOf(str[1]), 0.01, message + chatId, chatId.toString(), Double.parseDouble(str[2]), tp, Double.parseDouble(str[str.length - 1]), true);
+        Double sl = null;
+        index = message.indexOf("SL");
+        if (index != -1) {
+            sl = extractFirstDecimal(message.substring(index));
+        }
+
+        String[] str = message.split("\\s+|-|_");
+
+        Position position = new Position(Symbol.valueOf(str[0]), TradeType.valueOf(str[1]), 0.01, message + chatId, chatId.toString(), entry, tp, sl, true);
         return new OpenPositionRequest(position, messageId);
     }
 
     @Override
     public ClosePositionRequest onClosePosition(Long chatId, String message, Long messageId) {
-        message = message.trim().toUpperCase();
-
         System.out.println("closing: " + message + ", chatId: " + chatId);
 
         return new ClosePositionRequest(messageId, message + chatId);

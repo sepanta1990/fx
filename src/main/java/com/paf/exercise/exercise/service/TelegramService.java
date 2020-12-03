@@ -50,6 +50,7 @@ public class TelegramService {
             }
 
             messageId = update.getMessage().getMessageId();
+            String message = update.getMessage().getText().toUpperCase().trim();
 
             Chat chat = update.getMessage().getChat();
             if (chat == null) {
@@ -59,22 +60,22 @@ public class TelegramService {
 
             MessageParser messageParser = getMessageParser(chat.getId());
 
-            MessageAction messageAction = messageParser.getMessageAction(update.getMessage().getText());
+            MessageAction messageAction = messageParser.getMessageAction(message);
 
             if (previousMessageAction == MessageAction.CLOSE) {
                 if (messageAction == MessageAction.OPEN) {
-                    closePositionQueue.add(messageParser.onClosePosition(chat.getId(), update.getMessage().getText(), messageId));
+                    closePositionQueue.add(messageParser.onClosePosition(chat.getId(), message, messageId));
                 }
             } else {
                 if (messageAction == MessageAction.OPEN) {
-                    openPositionQueue.add(messageParser.onOpenPosition(chat.getId(), update.getMessage().getText(), messageId));
+                    openPositionQueue.add(messageParser.onOpenPosition(chat.getId(), message, messageId));
                 }
             }
             previousMessageAction = messageAction;
         } catch (Exception e) {
             e.printStackTrace();
             if (messageId != null) {
-                telegramClient.sendMessage(new SendMessageRequest(telegramBotChatId, "EXCEPTION: "+ e.getMessage(), messageId));
+                telegramClient.sendMessage(new SendMessageRequest(telegramBotChatId, "EXCEPTION: " + e.getMessage(), messageId));
             }
         }
     }
