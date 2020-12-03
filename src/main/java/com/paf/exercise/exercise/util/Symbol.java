@@ -14,6 +14,7 @@ public enum Symbol {
     EURSGD,
     EURGBP,
     EURNZD,
+    EURZAR,
 
     USDJPY,
     USDCAD,
@@ -23,6 +24,7 @@ public enum Symbol {
     USDNOK,
     USDSEK,
     USDSGD,
+    USDZAR,
 
     GBPJPY,
     GBPUSD,
