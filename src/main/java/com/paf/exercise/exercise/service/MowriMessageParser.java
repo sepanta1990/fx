@@ -49,7 +49,7 @@ public class MowriMessageParser implements MessageParser {
             sl = extractFirstDecimal(message.substring(index));
         }
 
-        String[] str = message.split("\\s+|-|_");
+        String[] str = message.split("\\s+|-|_|\\d");
 
         Position position = new Position(Symbol.valueOf(str[0]), TradeType.valueOf(str[1]), 0.01, message + chatId, chatId.toString(), entry, tp, sl, true);
         return new OpenPositionRequest(position, messageId);
