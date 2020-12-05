@@ -59,16 +59,17 @@ public class TelegramService {
 
 
             MessageParser messageParser = getMessageParser(chat.getId());
+            String channelName = getChannelName(chat.getId());
 
             MessageAction messageAction = messageParser.getMessageAction(message);
 
             if (previousMessageAction == MessageAction.CLOSE) {
                 if (messageAction == MessageAction.OPEN) {
-                    closePositionQueue.add(messageParser.onClosePosition(chat.getId(), message, messageId));
+                    closePositionQueue.add(messageParser.onClosePosition(channelName, message, messageId));
                 }
             } else {
                 if (messageAction == MessageAction.OPEN) {
-                    openPositionQueue.add(messageParser.onOpenPosition(chat.getId(), message, messageId));
+                    openPositionQueue.add(messageParser.onOpenPosition(channelName, message, messageId));
                 }
             }
             previousMessageAction = messageAction;
@@ -88,5 +89,15 @@ public class TelegramService {
         }
         throw new IllegalArgumentException("Channel is not supported with id: " + id);
     }
+
+    private String getChannelName(Long id) {
+        if (id == -1001305938901L) {
+            return "@Channel:ForexLytic";
+        } else if (id == -1001390026460L) {
+            return "@Channel:Mowrifx";
+        }
+        throw new IllegalArgumentException("Channel is not supported with id: " + id);
+    }
+
 
 }

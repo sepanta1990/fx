@@ -7,16 +7,20 @@ import com.paf.exercise.exercise.util.MessageAction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public interface MessageParser {
-    MessageAction getMessageAction(String message) throws IllegalArgumentException;
+public abstract class MessageParser {
+    static String normalizeLabel(String label) {
+        return label.replaceAll("[^a-zA-Z0-9@.:-]", "");
+    }
 
-    boolean isTradeMessage(String message);
+    abstract MessageAction getMessageAction(String message) throws IllegalArgumentException;
 
-    OpenPositionRequest onOpenPosition(Long chatId, String message, Long messageId);
+    abstract boolean isTradeMessage(String message);
 
-    ClosePositionRequest onClosePosition(Long chatId, String message, Long messageId);
+    abstract OpenPositionRequest onOpenPosition(String channelName, String message, Long messageId);
 
-    default Double extractFirstDecimal(String str) {
+    abstract ClosePositionRequest onClosePosition(String channelName, String message, Long messageId);
+
+    Double extractFirstDecimal(String str) {
         if (str == null)
             return null;
         Pattern pattern = Pattern.compile("[0-9]*\\.?[0-9]+([0-9]+)?.");

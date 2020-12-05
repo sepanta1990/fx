@@ -9,7 +9,7 @@ import com.paf.exercise.exercise.util.TradeType;
 
 import java.util.Arrays;
 
-public class MowriMessageParser implements MessageParser {
+public class MowriMessageParser extends MessageParser {
 
     @Override
     public MessageAction getMessageAction(String message) throws IllegalArgumentException {
@@ -32,8 +32,8 @@ public class MowriMessageParser implements MessageParser {
     }
 
     @Override
-    public OpenPositionRequest onOpenPosition(Long chatId, String message, Long messageId) {
-        System.out.println("opening: " + message + ", chatId: " + chatId);
+    public OpenPositionRequest onOpenPosition(String channelName, String message, Long messageId) {
+        System.out.println("opening: " + message + ", channelName: " + channelName);
 
         Double entry = extractFirstDecimal(message);
 
@@ -51,14 +51,14 @@ public class MowriMessageParser implements MessageParser {
 
         String[] str = message.split("\\s+|-|_|\\d");
 
-        Position position = new Position(Symbol.valueOf(str[0]), TradeType.valueOf(str[1]), 0.01, message + chatId, chatId.toString(), entry, tp, sl, true);
+        Position position = new Position(Symbol.valueOf(str[0]), TradeType.valueOf(str[1]), 0.01, normalizeLabel(message + channelName), channelName, entry, tp, sl, true);
         return new OpenPositionRequest(position, messageId);
     }
 
     @Override
-    public ClosePositionRequest onClosePosition(Long chatId, String message, Long messageId) {
-        System.out.println("closing: " + message + ", chatId: " + chatId);
+    public ClosePositionRequest onClosePosition(String channelName, String message, Long messageId) {
+        System.out.println("closing: " + message + ", channelName: " + channelName);
 
-        return new ClosePositionRequest(messageId, message + chatId);
+        return new ClosePositionRequest(messageId, normalizeLabel(message + channelName));
     }
 }
