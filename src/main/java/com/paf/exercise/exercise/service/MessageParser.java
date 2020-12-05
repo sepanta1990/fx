@@ -8,10 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class MessageParser {
-    static String normalizeLabel(String label) {
-        return label.replaceAll("[^a-zA-Z0-9@.:-]", "");
-    }
-
     abstract MessageAction getMessageAction(String message) throws IllegalArgumentException;
 
     abstract boolean isTradeMessage(String message);
@@ -32,5 +28,9 @@ public abstract class MessageParser {
         } else {
             return null;
         }
+    }
+
+    String normalizeLabel(String label) {
+        return label.replaceAll("[^a-zA-Z0-9@.:-]", "");
     }
 }
