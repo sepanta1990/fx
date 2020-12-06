@@ -25,7 +25,7 @@ public class ForexLyticMessageParser extends MessageParser {
 
     @Override
     public boolean isTradeMessage(String message) {
-        String symbolName = message.split(" ")[0].trim();
+        String symbolName = message.split("\\s+|-|_")[0].trim();
 
         return Arrays.stream(Symbol.values()).anyMatch(symbol -> symbol.name().equalsIgnoreCase(symbolName));
     }
@@ -34,7 +34,7 @@ public class ForexLyticMessageParser extends MessageParser {
     public OpenPositionRequest onOpenPosition(String channelName, String message, Long messageId) {
         System.out.println("opening: " + message + ", channelName: " + channelName);
 
-        Double entry = extractFirstDecimal(message);
+       /* Double entry = extractFirstDecimal(message);
 
         Double tp = null;
         int index = message.indexOf("PROFIT");
@@ -46,11 +46,11 @@ public class ForexLyticMessageParser extends MessageParser {
         index = message.indexOf("LOSS");
         if (index != -1) {
             sl = extractFirstDecimal(message.substring(index));
-        }
+        }*/
 
-        String[] str = message.split("\\s+");
+        String[] str = message.split("\\s+|-|_|\\d");
 
-        Position position = new Position(Symbol.valueOf(str[0]), TradeType.valueOf(str[1]), 0.01, normalizeLabel(message + channelName), channelName, entry, tp, sl, true);
+        Position position = new Position(Symbol.valueOf(str[0]), TradeType.valueOf(str[1]), 0.01, normalizeLabel(message + channelName), channelName);
         return new OpenPositionRequest(position, messageId);
     }
 
