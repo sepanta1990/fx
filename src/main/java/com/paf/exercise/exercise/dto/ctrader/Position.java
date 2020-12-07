@@ -20,12 +20,15 @@ public class Position {
     public Position() {
     }
 
-    public Position(Symbol symbol, TradeType tradeType, Double quantity, String label, String comment) {
+    public Position(Symbol symbol, TradeType tradeType, Double quantity, String label, String comment, Double entryPrice, Double stopLoss, Double takeProfit) {
         this.symbol = symbol;
         this.tradeType = tradeType;
         this.quantity = quantity;
         this.label = label;
-        this.comment=comment;
+        this.comment = comment;
+        this.entryPrice = entryPrice;
+        this.stopLoss = stopLoss;
+        this.takeProfit = takeProfit;
     }
 
     public TradeType getTradeType() {

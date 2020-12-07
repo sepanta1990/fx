@@ -33,7 +33,7 @@ public class ForexLyticMessageParser extends MessageParser {
     public OpenPositionRequest onOpenPosition(String channelName, String message, Long messageId) {
         System.out.println("opening: " + message + ", channelName: " + channelName);
 
-       /* Double entry = extractFirstDecimal(message);
+        Double entry = extractFirstDecimal(message);
 
         Double tp = null;
         int index = message.indexOf("PROFIT");
@@ -45,9 +45,9 @@ public class ForexLyticMessageParser extends MessageParser {
         index = message.indexOf("LOSS");
         if (index != -1) {
             sl = extractFirstDecimal(message.substring(index));
-        }*/
+        }
 
-        Position position = new Position(getSymbol(message), getTradeType(message), 0.01, normalizeLabel(message + channelName), channelName);
+        Position position = new Position(getSymbol(message), getTradeType(message), 0.01, normalizeLabel(message + channelName), channelName, entry, sl, tp);
         return new OpenPositionRequest(position, messageId);
     }
 
