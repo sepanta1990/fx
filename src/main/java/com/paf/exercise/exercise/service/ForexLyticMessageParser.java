@@ -5,7 +5,6 @@ import com.paf.exercise.exercise.dto.ctrader.OpenPositionRequest;
 import com.paf.exercise.exercise.dto.ctrader.Position;
 import com.paf.exercise.exercise.util.MessageAction;
 import com.paf.exercise.exercise.util.Symbol;
-import com.paf.exercise.exercise.util.TradeType;
 
 import java.util.Arrays;
 
@@ -48,9 +47,7 @@ public class ForexLyticMessageParser extends MessageParser {
             sl = extractFirstDecimal(message.substring(index));
         }*/
 
-        String[] str = message.split("\\s+|-|_|\\d");
-
-        Position position = new Position(Symbol.valueOf(str[0]), TradeType.valueOf(str[1]), 0.01, normalizeLabel(message + channelName), channelName);
+        Position position = new Position(getSymbol(message), getTradeType(message), 0.01, normalizeLabel(message + channelName), channelName);
         return new OpenPositionRequest(position, messageId);
     }
 
